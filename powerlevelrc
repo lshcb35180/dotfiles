@@ -1,3 +1,4 @@
+
 POWERLEVEL9K_MODE='nerdfont-complete'
 
 POWERLEVEL9K_PROMPT_ON_NEWLINE=true
@@ -11,7 +12,7 @@ POWERLEVEL9K_STATUS_VERBOSE=true
 POWERLEVEL9K_MULTILINE_FIRST_PROMPT_PREFIX="%F{118}\u250C%f"
 POWERLEVEL9K_MULTILINE_LAST_PROMPT_PREFIX="%F{119}\u2514\u257C%F{112}\uF460%F{113}\uF460%F{114}\uF460%f "
 
-POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(os_icon context dir vcs)
+POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(os_icon context dir custom_posh_git)
 POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(command_execution_time status custom_battery_status time)
 
 # POWERLEVEL9K_LEFT_SEGMENT_SEPARATOR='\UE0BC'
@@ -34,6 +35,15 @@ POWERLEVEL9K_SHORTEN_STRATEGY='truncate_from_right'
 # POWERLEVEL9K_VCS_UNTRACKED_FOREGROUND='orange'
 # POWERLEVEL9K_VCS_MODIFIED_BACKGROUND='black'
 # POWERLEVEL9K_VCS_MODIFIED_FOREGROUND='yellow'
+
+# custom vcs (posh-git-sh)
+. $HOME/development/posh-git-sh/git-prompt.sh
+prompt_posh_git() {
+	echo "%K{none}$(__posh_git_echo)%K{236}"
+}
+POWERLEVEL9K_CUSTOM_POSH_GIT='prompt_posh_git'
+POWERLEVEL9K_CUSTOM_POSH_GIT_BACKGROUND='236'
+POWERLEVEL9K_CUSTOM_POSH_GIT_FOREGROUND='yellow'
 
 # command_execution_time
 POWERLEVEL9K_COMMAND_EXECUTION_TIME_THRESHOLD=1.5
@@ -108,7 +118,7 @@ prompt_zsh_battery_level() {
 	# echo -n "%{$color%} $b_percent%% $b_timerem $symbol "
 	echo -n "%{$color%}$symbol %F{yellow}$b_percent%%"
 }
-POWERLEVEL9K_CUSTOM_BATTERY_STATUS="prompt_zsh_battery_level"
+POWERLEVEL9K_CUSTOM_BATTERY_STATUS='prompt_zsh_battery_level'
 POWERLEVEL9K_CUSTOM_BATTERY_STATUS_BACKGROUND='black'
 POWERLEVEL9K_CUSTOM_BATTERY_STATUS_FOREGROUND='yellow'
 

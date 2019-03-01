@@ -1,5 +1,5 @@
 [ -f /usr/local/etc/bash_completion ] && . /usr/local/etc/bash_completion
-source ~/development/posh-git-bash/git-prompt.sh
+source ~/development/posh-git-sh/git-prompt.sh
 # PROMPT_COMMAND='__posh_git_ps1 "\u@\h:\w " "\\\$ ";'$PROMPT_COMMAND
 PROMPT_COMMAND='__posh_git_ps1 "\u:\W " "\\\$ ";'$PROMPT_COMMAND
 
