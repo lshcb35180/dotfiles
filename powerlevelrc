@@ -1,4 +1,3 @@
-
 POWERLEVEL9K_MODE='nerdfont-complete'
 
 POWERLEVEL9K_PROMPT_ON_NEWLINE=true
@@ -12,38 +11,49 @@ POWERLEVEL9K_STATUS_VERBOSE=true
 POWERLEVEL9K_MULTILINE_FIRST_PROMPT_PREFIX="%F{118}\u250C%f"
 POWERLEVEL9K_MULTILINE_LAST_PROMPT_PREFIX="%F{119}\u2514\u257C%F{112}\uF460%F{113}\uF460%F{114}\uF460%f "
 
-POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(os_icon context dir custom_posh_git)
+POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(os_icon dir vcs custom_posh_git_joined)
 POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(command_execution_time status custom_battery_status time)
 
 # POWERLEVEL9K_LEFT_SEGMENT_SEPARATOR='\UE0BC'
 # POWERLEVEL9K_RIGHT_SEGMENT_SEPARATOR='\UE0BA'
 
 # context
-POWERLEVEL9K_CONTEXT_TEMPLATE='%n'
+# POWERLEVEL9K_CONTEXT_TEMPLATE='%n'
 
 # dir
 POWERLEVEL9K_HOME_ICON=''
 POWERLEVEL9K_HOME_SUB_ICON=''
 POWERLEVEL9K_FOLDER_ICON=''
 POWERLEVEL9K_ETC_ICON=''
-POWERLEVEL9K_SHORTEN_DIR_LENGTH=8
+POWERLEVEL9K_SHORTEN_DIR_LENGTH=5
 POWERLEVEL9K_SHORTEN_STRATEGY='truncate_from_right'
 
 # vcs
-# POWERLEVEL9K_VCS_CLEAN_BACKGROUND='none'
-# POWERLEVEL9K_VCS_UNTRACKED_BACKGROUND='none'
-# POWERLEVEL9K_VCS_UNTRACKED_FOREGROUND='orange'
-# POWERLEVEL9K_VCS_MODIFIED_BACKGROUND='black'
-# POWERLEVEL9K_VCS_MODIFIED_FOREGROUND='yellow'
+POWERLEVEL9K_HIDE_BRANCH_ICON=true
+POWERLEVEL9K_SHOW_CHANGESET=true
+POWERLEVEL9K_CHANGESET_HASH_LENGTH=7
+POWERLEVEL9K_VCS_SHORTEN_LENGTH=0
+POWERLEVEL9K_VCS_SHORTEN_MIN_LENGTH=0
+POWERLEVEL9K_VCS_SHORTEN_STRATEGY='truncate_from_right'
+POWERLEVEL9K_VCS_SHORTEN_DELIMITER='\b'
+POWERLEVEL9K_VCS_CLEAN_BACKGROUND='none'
+POWERLEVEL9K_VCS_UNTRACKED_BACKGROUND='none'
+POWERLEVEL9K_VCS_MODIFIED_BACKGROUND='none'
+POWERLEVEL9K_VCS_CLEAN_FOREGROUND='green'
+POWERLEVEL9K_VCS_UNTRACKED_FOREGROUND='green'  # 'magenta'
+POWERLEVEL9K_VCS_MODIFIED_FOREGROUND='yellow'
 
 # custom vcs (posh-git-sh)
-. $HOME/development/posh-git-sh/git-prompt.sh
+source $HOME/development/posh-git-sh/git-prompt.sh
 prompt_posh_git() {
-	echo "%K{none}$(__posh_git_echo)%K{236}"
+	local -r pg_out=$(__posh_git_echo)
+	if [ -n "$pg_out" ] ; then
+		echo -n "%K{none}$pg_out%K{236}"
+	fi
 }
 POWERLEVEL9K_CUSTOM_POSH_GIT='prompt_posh_git'
 POWERLEVEL9K_CUSTOM_POSH_GIT_BACKGROUND='236'
-POWERLEVEL9K_CUSTOM_POSH_GIT_FOREGROUND='yellow'
+POWERLEVEL9K_CUSTOM_POSH_GIT_FOREGROUND='236'
 
 # command_execution_time
 POWERLEVEL9K_COMMAND_EXECUTION_TIME_THRESHOLD=1.5
@@ -51,59 +61,74 @@ POWERLEVEL9K_COMMAND_EXECUTION_TIME_BACKGROUND='black'
 POWERLEVEL9K_COMMAND_EXECUTION_TIME_FOREGROUND='yellow'
 
 # custom_battery_status  ## Mac OS X only
+# __compute_battery_symbol() {
+# 	local -r __c=`expr $2 != 'Battery'`
+# 	if [ "$1" -gt 98 ] ; then
+# 		echo -n "\uF$(bc <<<"obase=16;ibase=16;578+78D*$__c")"
+# 	elif [ "$1" -lt 10 ] ; then
+# 		echo -n "\uF$(bc <<<"obase=16;ibase=16;58D+783*$__c")"
+# 	elif [ "$1" -ge 10 ] ; then
+# 		local -r __p=`bc <<<"($1)/10%10"`
+# 		echo -n "\uF$(bc <<<"obase=16;ibase=16;578+$__p+78D*$__c")"
+# 	fi
+# }
 prompt_zsh_battery_level() {
 	pmset_out=`pmset -g ps`
-	# local pwr_src=`echo $pmset_out | egrep ''\''[[:alpha:] ]+'\''' -o`    # get power source: 'AC Power', 'Battery Power'
-	local b_status=`echo $pmset_out | egrep '\w+;' -o | egrep '\w+' -o`   # get battery status: 'discharging', 'charging', 'charged'
-	local b_percent=`echo $pmset_out | egrep '\d+%' -o | egrep '\d+' -o`  # get battery percentage w/o '%'
-	# local b_timerem=`echo $pmset_out | egrep '(\d+:\d+)' -o`              # get battery time remaining
+	# get power source: 'AC', 'Battery'
+	local pwr_src=`echo $pmset_out | egrep ''\''[[:alpha:] ]+'\''' -o | egrep '\w+' -o | head -n1`
+	# get battery status: 'discharging', 'charging', 'charged'
+	# local b_status=`echo $pmset_out | egrep '\w+;' -o | egrep '\w+' -o`
+	# get battery percentage w/o '%'
+	local b_percent=`echo $pmset_out | egrep '\d+%' -o | egrep '\d+' -o`
+	# get battery time remaining
+	# local b_timerem=`echo $pmset_out | egrep '(\d+:\d+)' -o`
 
 	local symbol=$'\uF1E6'  # nf-fa-plug
 	local color='%F{white}'
 
 	# # horizontal battery icon
-	# if [ "$b_percent" -eq 100 ] ; then   # nf-fa-battery_4, 4/4 filled
-	# 	symbol=$'\uf240' ; color='%F{028}' ;  # green4
-	# elif [ "$b_percent" -gt 80 ] ; then  # nf-fa-battery_4, 4/4 filled
-	# 	symbol=$'\uf240' ; color='%F{034}' ;  # green3
-	# elif [ "$b_percent" -gt 60 ] ; then  # nf-fa-battery_3, 3/4 filled
-	# 	symbol=$'\uf241' ; color='%F{070}' ;  # chartreuse3
-	# elif [ "$b_percent" -gt 40 ] ; then  # nf-fa-battery_2, 2/4 filled
-	# 	symbol=$'\uf242' ; color='%F{142}' ;  # gold3
-	# elif [ "$b_percent" -gt 20 ] ; then  # nf-fa-battery_1, 1/4 filled
-	# 	symbol=$'\uf243' ; color='%F{130}' ;  # darkorange3
-	# elif [ "$b_percent" -le 20 ] ; then  # nf-fa-battery_0, 0/4 filled
-	# 	symbol=$'\uf244' ; color='%F{124}' ;  # red3
-	# fi
-
-	# vertical battery icon
-	if [ "$b_percent" -gt 98 ] ; then     # nf-mdi-battery, 100%
-		symbol=$'\uF578' ; color='%F{045}' ;  # turquoise2
-	elif [ "$b_percent" -gt 89 ] ; then   # nf-mdi-battery_90, 90%
-		symbol=$'\uF581' ; color='%F{045}' ;  # turquoise2
-	elif [ "$b_percent" -gt 79 ] ; then   # nf-mdi-battery_80, 80%
-		symbol=$'\uF580' ; color='%F{039}' ;  # deepskyblue1
-	elif [ "$b_percent" -gt 69 ] ; then   # nf-mdi-battery_70, 70%
-		symbol=$'\uF57F' ; color='%F{038}' ;  # deepskyblue2
-	elif [ "$b_percent" -gt 59 ] ; then   # nf-mdi-battery_60, 60%
-		symbol=$'\uF57E' ; color='%F{097}' ;  # mediumpurple3
-	elif [ "$b_percent" -gt 49 ] ; then   # nf-mdi-battery_50, 50%
-		symbol=$'\uF57D' ; color='%F{134}' ;  # mediumorchid
-	elif [ "$b_percent" -gt 39 ] ; then   # nf-mdi-battery_40, 40%
-		symbol=$'\uF57C' ; color='%F{127}' ;  # magenta3
-	elif [ "$b_percent" -gt 29 ] ; then   # nf-mdi-battery_30, 30%
-		symbol=$'\uF57B' ; color='%F{125}' ;  # deeppink4
-	elif [ "$b_percent" -gt 19 ] ; then   # nf-mdi-battery_20, 20%
-		symbol=$'\uF57A' ; color='%F{160}' ;  # red2
-	elif [ "$b_percent" -gt  9 ] ; then   # nf-mdi-battery_10, 10%
-		symbol=$'\uF579' ; color='%F{160}' ;  # red2
+	if [ "$b_percent" -eq 100 ] ; then   # nf-fa-battery_4, 4/4 filled
+		symbol=$'\uf240' ; color='%F{045}' ;  # green4
+	elif [ "$b_percent" -gt 80 ] ; then  # nf-fa-battery_4, 4/4 filled
+		symbol=$'\uf240' ; color='%F{039}' ;  # green3
+	elif [ "$b_percent" -gt 60 ] ; then  # nf-fa-battery_3, 3/4 filled
+		symbol=$'\uf241' ; color='%F{038}' ;  # chartreuse3
+	elif [ "$b_percent" -gt 40 ] ; then  # nf-fa-battery_2, 2/4 filled
+		symbol=$'\uf242' ; color='%F{097}' ;  # gold3
+	elif [ "$b_percent" -gt 20 ] ; then  # nf-fa-battery_1, 1/4 filled
+		symbol=$'\uf243' ; color='%F{125}' ;  # darkorange3
+	elif [ "$b_percent" -le 20 ] ; then  # nf-fa-battery_0, 0/4 filled
+		symbol=$'\uf244' ; color='%F{160}' ;  # red3
 	fi
 
+	# vertical battery icon
+	# if [ "$b_percent" -gt 98 ] ; then     # nf-mdi-battery, 100%
+	# 	symbol=$'\uF578' ; color='%F{045}' ;  # turquoise2
+	# elif [ "$b_percent" -gt 89 ] ; then   # nf-mdi-battery_90, 90%
+	# 	symbol=$'\uF581' ; color='%F{045}' ;  # turquoise2
+	# elif [ "$b_percent" -gt 79 ] ; then   # nf-mdi-battery_80, 80%
+	# 	symbol=$'\uF580' ; color='%F{039}' ;  # deepskyblue1
+	# elif [ "$b_percent" -gt 69 ] ; then   # nf-mdi-battery_70, 70%
+	# 	symbol=$'\uF57F' ; color='%F{038}' ;  # deepskyblue2
+	# elif [ "$b_percent" -gt 59 ] ; then   # nf-mdi-battery_60, 60%
+	# 	symbol=$'\uF57E' ; color='%F{097}' ;  # mediumpurple3
+	# elif [ "$b_percent" -gt 49 ] ; then   # nf-mdi-battery_50, 50%
+	# 	symbol=$'\uF57D' ; color='%F{134}' ;  # mediumorchid
+	# elif [ "$b_percent" -gt 39 ] ; then   # nf-mdi-battery_40, 40%
+	# 	symbol=$'\uF57C' ; color='%F{127}' ;  # magenta3
+	# elif [ "$b_percent" -gt 29 ] ; then   # nf-mdi-battery_30, 30%
+	# 	symbol=$'\uF57B' ; color='%F{125}' ;  # deeppink4
+	# elif [ "$b_percent" -gt 19 ] ; then   # nf-mdi-battery_20, 20%
+	# 	symbol=$'\uF57A' ; color='%F{160}' ;  # red2
+	# elif [ "$b_percent" -gt  9 ] ; then   # nf-mdi-battery_10, 10%
+	# 	symbol=$'\uF579' ; color='%F{160}' ;  # red2
+	# fi
+
 	# charging status colour
-	if [ "$b_status" = 'charging' ] ; then
-		color='%F{green}'
-	elif [ "$b_status" = 'charged' ] ; then
-		color='%F{white}'
+	if [ "$pwr_src" != 'Battery' ] ; then
+		# symbol=$'\uF583'
+		symbol=$'\uF1E6'
+		color='%F{yellow}'
 	fi
 
 	# calculate time remaining in %0.1f hour format
@@ -116,7 +141,7 @@ prompt_zsh_battery_level() {
 	# fi
 
 	# echo -n "%{$color%} $b_percent%% $b_timerem $symbol "
-	echo -n "%{$color%}$symbol %F{yellow}$b_percent%%"
+	echo -n "%{$color%}$symbol  %F{yellow}$b_percent%%"
 }
 POWERLEVEL9K_CUSTOM_BATTERY_STATUS='prompt_zsh_battery_level'
 POWERLEVEL9K_CUSTOM_BATTERY_STATUS_BACKGROUND='black'
