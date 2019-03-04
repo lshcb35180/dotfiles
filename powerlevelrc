@@ -88,17 +88,17 @@ prompt_zsh_battery_level() {
 
 	# # horizontal battery icon
 	if [ "$b_percent" -eq 100 ] ; then   # nf-fa-battery_4, 4/4 filled
-		symbol=$'\uf240' ; color='%F{045}' ;  # green4
-	elif [ "$b_percent" -gt 80 ] ; then  # nf-fa-battery_4, 4/4 filled
-		symbol=$'\uf240' ; color='%F{039}' ;  # green3
-	elif [ "$b_percent" -gt 60 ] ; then  # nf-fa-battery_3, 3/4 filled
-		symbol=$'\uf241' ; color='%F{038}' ;  # chartreuse3
-	elif [ "$b_percent" -gt 40 ] ; then  # nf-fa-battery_2, 2/4 filled
-		symbol=$'\uf242' ; color='%F{097}' ;  # gold3
-	elif [ "$b_percent" -gt 20 ] ; then  # nf-fa-battery_1, 1/4 filled
-		symbol=$'\uf243' ; color='%F{125}' ;  # darkorange3
-	elif [ "$b_percent" -le 20 ] ; then  # nf-fa-battery_0, 0/4 filled
-		symbol=$'\uf244' ; color='%F{160}' ;  # red3
+		symbol=$'\uf240' ; color='%F{147}' ;  # lightsteelblue
+	elif [ "$b_percent" -gt 90 ] ; then  # nf-fa-battery_4, 4/4 filled
+		symbol=$'\uf240' ; color='%F{177}' ;  # violet
+	elif [ "$b_percent" -gt 70 ] ; then  # nf-fa-battery_3, 3/4 filled
+		symbol=$'\uf241' ; color='%F{201}' ;  # magenta1
+	elif [ "$b_percent" -gt 50 ] ; then  # nf-fa-battery_2, 2/4 filled
+		symbol=$'\uf242' ; color='%F{199}' ;  # deeppink1
+	elif [ "$b_percent" -gt 30 ] ; then  # nf-fa-battery_1, 1/4 filled
+		symbol=$'\uf243' ; color='%F{198}' ;  # deeppink1
+	elif [ "$b_percent" -le 10 ] ; then  # nf-fa-battery_0, 0/4 filled
+		symbol=$'\uf244' ; color='%F{197}' ;  # deeppink2
 	fi
 
 	# vertical battery icon
@@ -140,6 +140,7 @@ prompt_zsh_battery_level() {
 	# 	b_timerem="$b_tr_h.${b_tr_m: -1}h"
 	# fi
 
+	# echo -n "%F{147}\uf240  %F{177}\uf240  %F{201}\uf241  %F{199}\uf242  %F{198}\uf243  %F{197}\uf244 "
 	# echo -n "%{$color%} $b_percent%% $b_timerem $symbol "
 	echo -n "%{$color%}$symbol  %F{yellow}$b_percent%%"
 }
