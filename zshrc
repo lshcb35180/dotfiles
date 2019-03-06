@@ -110,3 +110,5 @@ source $ZSH/oh-my-zsh.sh
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
+alias cleancoresfolder='echo "sudo rm -f /cores/core.*" && sudo rm -f /cores/core.*'
+alias cleanbrewcache='echo "rm -rf $(brew --cache)" && rm -rf $(brew --cache)'
