@@ -97,6 +97,8 @@ prompt_zsh_battery_level() {
 		symbol=$'\uf242' ; color='%F{199}' ;  # deeppink1
 	elif [ "$b_percent" -gt 30 ] ; then  # nf-fa-battery_1, 1/4 filled
 		symbol=$'\uf243' ; color='%F{198}' ;  # deeppink1
+	elif [ "$b_percent" -gt 10 ] ; then  # nf-fa-battery_1, 1/4 filled
+		symbol=$'\uf243' ; color='%F{197}' ;  # deeppink2
 	elif [ "$b_percent" -le 10 ] ; then  # nf-fa-battery_0, 0/4 filled
 		symbol=$'\uf244' ; color='%F{197}' ;  # deeppink2
 	fi
